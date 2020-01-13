@@ -1,0 +1,16 @@
+#!/bin/bash
+set -eux
+
+LIST=(${DOCKER_TAG/_/ })
+RUBY_VERSION=${LIST[1]/ruby/}
+REDMINE_VERSION=${LIST[0]//trunk/master}
+
+LIST=(${REDMINE_VERSION//[.-]/ })
+if [ ${#LIST[*]} -eq 2 ]; then
+  LATEST_VER=LATEST_${REDMINE_VERSION/./_}
+  if [ ${LATEST_VER} != "" ]; then
+    eval REDMINE_VERSION=\$$LATEST_VER
+  fi
+fi
+
+docker build --build-arg REDMINE_VERSION=${REDMINE_VERSION} --build-arg RUBY_VERSION=${RUBY_VERSION} -f $DOCKERFILE_PATH -t $IMAGE_NAME .
