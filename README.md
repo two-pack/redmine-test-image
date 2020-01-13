@@ -18,7 +18,7 @@ $ docker build --build-arg REDMINE_VERSION=4.1.0 --build-arg RUBY_VERSION=2.6 -f
 
 ## Hook for Dockerhub
 
-[hook\build](/hook/build) is a hook script for Dockerhub Automated build.
+[hooks\build](/hooks/build) is a hook script for Dockerhub Automated build.
 It decides testing version of Redmine and Ruby by Dcoker Tag, like **4.1_ruby2.6**.
 
 ### Example of tag name
