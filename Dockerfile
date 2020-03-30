@@ -84,20 +84,21 @@ RUN echo "development:" >> ${REDMINE_DB_POSTGRESQL} \
  && echo "  username: redmine" >> ${REDMINE_DB_POSTGRESQL} \
  && echo "  password: ""redmine""" >> ${REDMINE_DB_POSTGRESQL}
 # for mysql
-RUN echo "development:" >> ${REDMINE_DB_MYSQL} \
+RUN  if [ "${RUBY_VERSION%\.*}" = "2.3" ]; then export DB_ENCODING=utf8; else export DB_ENCODING=utf8mb4; fi \
+ && echo "development:" >> ${REDMINE_DB_MYSQL} \
  && echo "  adapter: mysql2" >> ${REDMINE_DB_MYSQL} \
  && echo "  database: redmine" >> ${REDMINE_DB_MYSQL} \
  && echo "  host: localhost" >> ${REDMINE_DB_MYSQL} \
  && echo "  username: root" >> ${REDMINE_DB_MYSQL} \
  && echo "  password: """"" >> ${REDMINE_DB_MYSQL} \
- && echo "  encoding: utf8mb4" >> ${REDMINE_DB_MYSQL} \
+ && echo "  encoding: ${DB_ENCODING}" >> ${REDMINE_DB_MYSQL} \
  && echo "test:" >> ${REDMINE_DB_MYSQL} \
  && echo "  adapter: mysql2" >> ${REDMINE_DB_MYSQL} \
  && echo "  database: redmine_test" >> ${REDMINE_DB_MYSQL} \
  && echo "  host: localhost" >> ${REDMINE_DB_MYSQL} \
  && echo "  username: root" >> ${REDMINE_DB_MYSQL} \
  && echo "  password: """"" >> ${REDMINE_DB_MYSQL} \
- && echo "  encoding: utf8mb4" >> ${REDMINE_DB_MYSQL}
+ && echo "  encoding: ${DB_ENCODING}" >> ${REDMINE_DB_MYSQL}
 
 # Prepare database for sqlites
 RUN cp ${REDMINE_DB_SQLITE3} ${REDMINE_DB} \
@@ -122,8 +123,9 @@ RUN cp ${REDMINE_DB_POSTGRESQL} ${REDMINE_DB} \
 RUN cp ${REDMINE_DB_MYSQL} ${REDMINE_DB} \
  && bundle install --path vendor/bundle \
  && service mysql start \
- && mysql -u root -e"CREATE DATABASE redmine CHARACTER SET utf8mb4;" \
- && mysql -u root -e"CREATE DATABASE redmine_test CHARACTER SET utf8mb4;" \
+ && if [ "${RUBY_VERSION%\.*}" = "2.3" ]; then export DB_ENCODING=utf8; else export DB_ENCODING=utf8mb4; fi \
+ && mysql -u root -e"CREATE DATABASE redmine CHARACTER SET ${DB_ENCODING};" \
+ && mysql -u root -e"CREATE DATABASE redmine_test CHARACTER SET ${DB_ENCODING};" \
  && mysql -u root -e"CREATE USER 'redmine'@'localhost' IDENTIFIED BY 'redmine';" \
  && mysql -u root -e"GRANT ALL PRIVILEGES ON redmine.* TO 'redmine'@'localhost';" \
  && mysql -u root -e"GRANT ALL PRIVILEGES ON redmine_test.* TO 'redmine'@'localhost';" \
