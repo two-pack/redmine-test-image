@@ -63,13 +63,6 @@ WORKDIR ${PATH_TO_REDMINE}
 RUN git clone -b ${REDMINE_VERSION} --depth 1 ${REDMINE_GIT_REPO} ${PATH_TO_REDMINE} \
  && mkdir -p vendor/bundle
 
-# for sqlite3
-RUN echo "development:" >> ${REDMINE_DB_SQLITE3} \
- && echo "  adapter: sqlite3" >> ${REDMINE_DB_SQLITE3} \
- && echo "  database: db/redmine_dev.sqlite3" >> ${REDMINE_DB_SQLITE3} \
- && echo "test:" >> ${REDMINE_DB_SQLITE3} \
- && echo "  adapter: sqlite3" >> ${REDMINE_DB_SQLITE3} \
- && echo "  database: db/redmine_test.sqlite3" >> ${REDMINE_DB_SQLITE3}
 # for postgresql
 RUN echo "development:" >> ${REDMINE_DB_POSTGRESQL} \
  && echo "  adapter: postgresql" >> ${REDMINE_DB_POSTGRESQL} \
@@ -99,13 +92,13 @@ RUN  if [ "${RUBY_VERSION%\.*}" = "2.3" ]; then export DB_ENCODING=utf8; else ex
  && echo "  username: root" >> ${REDMINE_DB_MYSQL} \
  && echo "  password: """"" >> ${REDMINE_DB_MYSQL} \
  && echo "  encoding: ${DB_ENCODING}" >> ${REDMINE_DB_MYSQL}
-
-# Prepare database for sqlites
-RUN cp ${REDMINE_DB_SQLITE3} ${REDMINE_DB} \
- && bundle install --path vendor/bundle \
- && bundle exec rake db:migrate \
- && bundle exec rake redmine:load_default_data REDMINE_LANG=en \
- && bundle exec rake generate_secret_token
+# for sqlite3
+RUN echo "development:" >> ${REDMINE_DB_SQLITE3} \
+ && echo "  adapter: sqlite3" >> ${REDMINE_DB_SQLITE3} \
+ && echo "  database: db/redmine_dev.sqlite3" >> ${REDMINE_DB_SQLITE3} \
+ && echo "test:" >> ${REDMINE_DB_SQLITE3} \
+ && echo "  adapter: sqlite3" >> ${REDMINE_DB_SQLITE3} \
+ && echo "  database: db/redmine_test.sqlite3" >> ${REDMINE_DB_SQLITE3}
 
 # Prepare database for postgresql
 RUN cp ${REDMINE_DB_POSTGRESQL} ${REDMINE_DB} \
@@ -118,7 +111,6 @@ RUN cp ${REDMINE_DB_POSTGRESQL} ${REDMINE_DB} \
  && bundle exec rake db:migrate \
  && bundle exec rake redmine:load_default_data REDMINE_LANG=en \
  && bundle exec rake generate_secret_token
-
 # Prepare database for mysql
 RUN cp ${REDMINE_DB_MYSQL} ${REDMINE_DB} \
  && bundle install --path vendor/bundle \
@@ -129,6 +121,12 @@ RUN cp ${REDMINE_DB_MYSQL} ${REDMINE_DB} \
  && mysql -u root -e"CREATE USER 'redmine'@'localhost' IDENTIFIED BY 'redmine';" \
  && mysql -u root -e"GRANT ALL PRIVILEGES ON redmine.* TO 'redmine'@'localhost';" \
  && mysql -u root -e"GRANT ALL PRIVILEGES ON redmine_test.* TO 'redmine'@'localhost';" \
+ && bundle exec rake db:migrate \
+ && bundle exec rake redmine:load_default_data REDMINE_LANG=en \
+ && bundle exec rake generate_secret_token
+# Prepare database for sqlites
+RUN cp ${REDMINE_DB_SQLITE3} ${REDMINE_DB} \
+ && bundle install --path vendor/bundle \
  && bundle exec rake db:migrate \
  && bundle exec rake redmine:load_default_data REDMINE_LANG=en \
  && bundle exec rake generate_secret_token
