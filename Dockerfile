@@ -31,8 +31,8 @@ RUN apt-get -y install --no-install-recommends \
  && curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
  && sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \
  && apt-get -y update \
- && apt-get -y install postgresql-11 postgresql-server-dev-11 \
- && sh -c "sed s/#listen_addresses\ =\ \'localhost\'/listen_addresses\ =\ \'*\'/ -i /etc/postgresql/11/main/postgresql.conf"
+ && apt-get -y install postgresql-9.6 postgresql-server-dev-9.6 \
+ && sh -c "sed s/#listen_addresses\ =\ \'localhost\'/listen_addresses\ =\ \'*\'/ -i /etc/postgresql/9.6/main/postgresql.conf"
 RUN rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp
