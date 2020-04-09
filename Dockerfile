@@ -23,10 +23,9 @@ RUN apt-get -y update \
         gnupg2 \
         mariadb-server \
         libmariadb-dev \
-        libdrm2 libgbm1 \
-        libxcb-dri3-0 \
-        libdrm-common \
-        libwayland-server0
+        libdrm2 \
+        libgbm1 \
+        libxcb-dri3-0
 RUN apt-get -y install --no-install-recommends \
         sudo \
         curl \
