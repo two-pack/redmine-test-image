@@ -25,7 +25,8 @@ RUN apt-get -y update \
         libmariadb-dev \
         libdrm2 \
         libgbm1 \
-        libxcb-dri3-0
+        libxcb-dri3-0 \
+        libxshmfence1
 RUN apt-get -y install --no-install-recommends \
         sudo \
         curl \
